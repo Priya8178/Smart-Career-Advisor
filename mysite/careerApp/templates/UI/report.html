@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Info & Career Suggestions</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="row">
+        <div class="col-5 student_info p-3 bg-light" style="position: absolute; right: 0; top: 29em; background-color: #fff; padding: 1rem;">
+            <form>
+                <div class="form-group" style="font-size: 1.2rem;">
+                    <label for="name" style="display: inline-block;">Name:</label>
+                    <input type="text" class="form-control" readonly placeholder="{{stuObj.name}}" id="name" style="border: none; font-size: 1.2rem;">
+                </div>
+                <div class="form-group" style="font-size: 1.2rem;">
+                    <label for="class" style="display: inline-block;">Class:</label>
+                    <input type="text" class="form-control" readonly placeholder="{{stuObj.currentClass}}" id="class" style="border: none; font-size: 1.2rem;">
+                </div>
+                <div class="form-group" style="font-size: 1.2rem;">
+                    <label for="date" style="display: inline-block;">Date:</label>
+                    <input type="text" class="form-control" readonly placeholder="{{report.timestamp.date}}" id="date" style="border: none; font-size: 1.2rem;">
+                </div>
+                <div class="form-group" style="font-size: 1.2rem;">
+                    <label for="stream" style="display: inline-block;">Stream:</label>
+                    <input type="text" class="form-control" readonly placeholder="{{stuObj.currentStream}}" id="stream" style="border: none; font-size: 1.2rem;">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if aptitude_career_conv %}
+        <div class="row careers1" style="margin: 2rem 0rem">
+            <div class="bg-light col-md-12 border">
+                <div style="text-align:center;font-size: 1.2rem;margin: 1rem 0rem;color:#48d2ff">Best Fit Careers For You Based On Your Aptitude</div>
+                {% for item in aptitude_career_conv|slice:5 %}
+                    <div class="col-sm-3 col-6 my-2 text-center career-sug" style="width: 33.3% !important; float: left;">
+                        <a href="javascript:void(0)">
+                            <div class="career-img">
+                                <img src="{% if item.careerImage %}{{item.careerImage.url}}{% endif %}" class="img-fluid border shadow" width="150" style="object-fit: cover;width: 148px;height: 97px;">
+                            </div>
+                        </a>
+                        <p class="h6 mt-2" style="word-break: break-word;">{{item.title}}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if interest_career_conv %}
+        <div class="row careers2" style="margin: 2rem 0rem">
+            <div class="bg-light col-md-12 border">
+                <div style="text-align:center;font-size: 1.2rem;margin: 1rem 0rem;color:#48d2ff">Best Fit Careers For You Based On Your Interest</div>
+                {% for item in interest_career_conv|slice:5 %}
+                    <div class="col-sm-3 col-6 my-2 text-center career-sug" style="width: 33.3% !important; float: left;">
+                        <a href="javascript:void(0)">
+                            <div class="career-img">
+                                <img src="{% if item.careerImage %}{{item.careerImage.url}}{% endif %}" class="img-fluid border shadow" width="150" style="object-fit: cover;width: 148px;height: 97px;">
+                            </div>
+                        </a>
+                        <p class="h6 mt-2" style="word-break: break-word;">{{item.title}}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if vocatinal_career %}
+        <div class="row vocational careers1" style="margin: 2rem 0rem">
+            <div class="bg-light col-md-12 border">
+                <div style="text-align:center;font-size: 1.2rem;margin: 1rem 0rem;color:#48d2ff">Best Vocational/Skills Careers</div>
+                {% for item in vocatinal_career|slice:5 %}
+                    <div class="col-sm-3 col-6 my-2 text-center career-sug" style="width: 33.3% !important; float: left;">
+                        <a href="javascript:void(0)">
+                            <div class="career-img">
+                                <img src="{% if item.careerImage %}{{item.careerImage.url}}{% endif %}" class="img-fluid border shadow" width="150" style="object-fit: cover;width: 148px;height: 97px;">
+                            </div>
+                        </a>
+                        <p class="h6 mt-2" style="word-break: break-word;">{{item.title}}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</body>
+</html>

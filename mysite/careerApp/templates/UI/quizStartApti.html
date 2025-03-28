@@ -1,0 +1,231 @@
+{% extends 'quiz/base.html' %}
+{% load static %}
+{% block title %}Quiz Starts {% endblock %}
+{% block content %}
+<div class="box container">
+    <div class="container mt-5">
+        <div class="d-flex justify-content-center row">
+            {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+            <div class="col-md-10 col-lg-10">
+                <div class="border">
+                    <div class="question bg-light p-3 border-bottom">
+                        <div class="d-flex flex-row justify-content-between align-items-center">
+                            <a href="javascript:void(0)">
+                                <img src="{% static 'img/emango_logo.png' %}" width="150">
+                            </a>
+                            <div>
+                                <select class="form-select bg-orange mr-2 p-2 d-none" style="font-family: Arial !important;" aria-label="Default select example" name="selectedLanguage" id="selectedLanguage">
+                                    <option value="" selected disabled>Choose Language</option>
+                                    <option value="#googtrans(hi)">Hindi</option>
+                                    <option value="#googtrans(mr)">Marathi</option>
+                                    <option value="#googtrans(gu)">Gujarati</option>
+                                    <option value="#googtrans(kn)">Kannada</option>
+                                    <option value="#googtrans(te)">Telugu</option>
+                                    <option value="#googtrans(ta)">Tamil</option>
+                                    <option value="#googtrans(pa)">Punjabi</option>
+                                    <option value="#googtrans(bn)">Bengali</option>
+                                    <option value="#googtrans(ur)">Urdu</option>
+                                    <option value="#googtrans(en)">English</option>
+                                </select>
+                                {% if not flag %}
+                                <span class="mr-2">(Total Questions: {{ questionList1 }})</span>
+                                {% endif %}
+                                <span class="p-2 bg-light rounded">
+                                    <span id="days"></span>
+                                    <span id="hours"></span>
+                                    <span id="minutes"></span>
+                                    <span id="seconds"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" class="quizArea" value="{{ quizArea }}">
+                    <div class="que-set active">
+                        {% for item in questionList %}
+                        <div class="question bg-white p-3 border-bottom">
+                            <div class="d-flex flex-row align-items-center question-title" counter="{{ forloop.counter }}">
+                                <h5 class="col pl-0 float-left">
+                                    <span class="d-flex float-left text-danger"> Q ({{ qcount|add:forloop.counter }}):</span>&nbsp;
+                                    <span>
+                                        {% if item.questionImage %}
+                                        <img src="{{ item.questionImage.url }}" class="img-fluid img-thumbnail shadow ans-img" title="">
+                                        {% if request.user.is_superuser %}({{ item.id }}){% endif %}
+                                        {% endif %}
+                                    </span>
+                                    {% if not item.questionImage %}
+                                    {% if student %}
+                                    {% if student.firstlang == '#googtrans(hi)' %}
+                                    {{ item.hilabel }} ?{% if request.user.is_superuser %}({{ item.id }}){% endif %}
+                                    {% elif student.firstlang == '#googtrans(mr)' %}
+                                    {{ item.mrlabel }} ?{% if request.user.is_superuser %}({{ item.id }}){% endif %}
+                                    {% elif student.firstlang == '#googtrans(gu)' %}
+                                    {{ item.gulabel }} ?{% if request.user.is_superuser %}({{ item.id }}){% endif %}
+                                    {% elif student.firstlang == '#googtrans(kn)' %}
+                                    {{ item.knlabel }} ?{% if request.user.is_superuser %}({{ item.id }}){% endif %}
+                                    {% elif student.firstlang == '#googtrans(te)' %}
+                                    {{ item.telabel }} ?{% if request.user.is_superuser %}({{ item.id }}){% endif %}
+                                    {% elif student.firstlang == '#googtrans(ta)' %}
+                                    {{ item.talabel }} ?{% if request.user.is_superuser %}({{ item.id }}){% endif %}
+                                    {% elif student.firstlang == '#googtrans(pa)' %}
+                                    {{ item.palabel }} ?{% if request.user.is_superuser %}({{ item.id }}){% endif %}
+                                    {% elif student.firstlang == '#googtrans(bn)' %}
+                                    {{ item.bnlabel }} ?{% if request.user.is_superuser %}({{ item.id }}){% endif %}
+                                    {% elif student.firstlang == '#googtrans(ur)' %}
+                                    {{ item.urlabel }} ?{% if request.user.is_superuser %}({{ item.id }}){% endif %}
+                                    {% else %}
+                                    {{ item.label }} ?{% if request.user.is_superuser %}({{ item.id }}){% endif %}
+                                    {% endif %}
+                                    {% else %}
+                                    {{ item.label }} ?{% if request.user.is_superuser %}({{ item.id }}){% endif %}
+                                    {% endif %}
+                                    {% endif %}
+                                </h5>
+                            </div>
+                            <input type="hidden" class="que" value="{{ item.id }}">
+                            {% if forloop.last %}
+                            <input type="hidden" name="isSubmit" value="submitTest">
+                            {% endif %}
+                            <div class="row mt-3">
+                                {% for i in answerList %}
+                                {% if i.ques == item %}
+                                {% if i.answerImage %}
+                                <div class="col-lg-3 col-6">
+                                    <label class="d-flex align-items-center">
+                                        <input type="checkbox" class="answer" value="{{ i.id }}">
+                                        <span class=""><img src="{{ i.answerImage.url }}" class="img-fluid img-thumbnail shadow ans-img" title=""></span>
+                                    </label>
+                                </div>
+                                {% else %}
+                                <div class="col-lg-3 col-6">
+                                    <label>
+                                        {% if student %}
+                                        {% if student.firstlang == '#googtrans(hi)' %}
+                                        <input type="checkbox" class="answer" value="{{ i.id }}">
+                                        <span>{{ i.hilabel }}</span>
+                                        {% elif student.firstlang == '#googtrans(mr)' %}
+                                        <input type="checkbox" class="answer" value="{{ i.id }}">
+                                        <span>{{ i.mrlabel }}</span>
+                                        {% elif student.firstlang == '#googtrans(gu)' %}
+                                        <input type="checkbox" class="answer" value="{{ i.id }}">
+                                        <span>{{ i.gulabel }}</span>
+                                        {% elif student.firstlang == '#googtrans(kn)' %}
+                                        <input type="checkbox" class="answer" value="{{ i.id }}">
+                                        <span>{{ i.knlabel }}</span>
+                                        {% elif student.firstlang == '#googtrans(te)' %}
+                                        <input type="checkbox" class="answer" value="{{ i.id }}">
+                                        <span>{{ i.telabel }}</span>
+                                        {% elif student.firstlang == '#googtrans(ta)' %}
+                                        <input type="checkbox" class="answer" value="{{ i.id }}">
+                                        <span>{{ i.talabel }}</span>
+                                        {% elif student.firstlang == '#googtrans(pa)' %}
+                                        <input type="checkbox" class="answer" value="{{ i.id }}">
+                                        <span>{{ i.palabel }}</span>
+                                        {% elif student.firstlang == '#googtrans(bn)' %}
+                                        <input type="checkbox" class="answer" value="{{ i.id }}">
+                                        <span>{{ i.bnlabel }}</span>
+                                        {% elif student.firstlang == '#googtrans(ur)' %}
+                                        <input type="checkbox" class="answer" value="{{ i.id }}">
+                                        <span>{{ i.urlabel }}</span>
+                                        {% else %}
+                                        <input type="checkbox" class="answer" value="{{ i.id }}">
+                                        <span>{{ i.label }}</span>
+                                        {% endif %}
+                                        {% else %}
+                                        <input type="checkbox" class="answer" value="{{ i.id }}">
+                                        <span>{{ i.label }}</span>
+                                        {% endif %}
+                                    </label>
+                                </div>
+                                {% endif %}
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <audio id="btn-audio" src="{% static 'test/audio/btn-sound.mp3' %}"></audio>
+
+                        {% if forloop.counter|divisibleby:5 %}
+                        <div class="d-flex justify-content-end p-3 bg-white">
+                            {% if forloop.last %}
+                            {% if flag %}
+                            <button class="submit_btn btn btn-primary border-success align-items-center btn-success float-right" type="Submit" name="subForm">
+                                Submit <i class="fa fa-angle-right ml-2"></i>
+                            </button>
+                            {% else %}
+                            <button class="submit_btn btn btn-primary border-success align-items-center btn-success float-right" type="Submit" name="subForm">
+                                Next <i class="fa fa-angle-right ml-2"></i>
+                            </button>
+                            {% endif %}
+                            {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" id="skipmodal" width="40" height="40" fill="currentColor" class="bi bi-info" viewBox="0 0 16 16">
+                                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                            </svg>
+                            <button class="skip_button btn btn-orange align-items-center float-right" style="margin-right:5px;" type="Submit" name="skipForm">
+                                Skip <i class="fa fa-angle-double-right ml-2"></i>
+                            </button>
+                            <button class="next_button btn btn-primary border-success align-items-center btn-success float-right" type="Submit" name="subForm">
+                                Next <i class="fa fa-angle-right ml-2"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                        </div>
+                        {% if forloop.last %}{% else %}
+                        <div class="que-set" style="display: none;">
+                        {% endif %}
+                    {% else %}
+                    {% if forloop.last %}
+                    <div class="d-flex justify-content-end p-3 bg-white">
+                        <button class="submit_btn btn btn-primary border-success align-items-center btn-success float-right" type="Submit" name="subForm">
+                            Submit <i class="fa fa-angle-right ml-2"></i>
+                        </button>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Skip i button Modal -->
+<div class="modal fade" id="skipModal" tabindex="-1" aria-labelledby="skipModal Label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body d-flex">
+                <p>Even if you skip, your attempted answers will still be accepted. After completing the test , you will get a chance to reattempt the skipped questions.</p>
+                <button type="button" class="hidemodal p-0 ml-auto border-0" style="font-size:20px; background: none;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block additionalJS %}
+<script type="text/javascript" src="{% static 'js/quiz.js' %}"></script>
+<script>
+    function play() {
+        var audio = document.getElementById("btn-audio");
+        audio.play();
+    }
+</script>
+<script>
+    if (localStorage.getItem("answers") == null) {
+        var queList = []
+        {% for item in questionList %}
+        queList.push({'que':{{item.id}}, 'answer':null})
+        {% endfor %}
+        localStorage.setItem("answers", JSON.stringify(queList));
+    }
+</script>
+{% endblock %}

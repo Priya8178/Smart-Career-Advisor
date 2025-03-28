@@ -1,0 +1,164 @@
+{% load static %}
+{% load webAppTags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Login To the Portal | eMango </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/floatingInput.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/csswithBT.css' %}">
+</head>
+
+<body class="loginBG">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5 mx-auto my-md-5 my-3">
+                <div class="card shadow-lg text-center" style="border-radius: 0.75rem">
+                    {% comment %} 
+                    <img src="http://ec2-3-17-9-235.us-east-2.compute.amazonaws.com/media/user.png" class="img-fluid py-4 mx-auto" width="150"> 
+                    {% endcomment %}
+
+                    {% if user.is_authenticated %}
+                    <p class="px-4">You are already signed in as <b>{{ user.get_full_name }}</b>. <a href="{% url 'webApp:logout' %}">Sign Out</a> to login with a different account</p>
+                    <p class="small"><a href="{% url 'webApp:allCareers' %}">Click Here to view All Careers Options Available</a></p>
+                    {% else %}
+                    <p>Sign-in/Sign-up to the Portal</p>
+                    <ul class="list-inline pb-2">
+                        <!-- <li class="list-inline-item border border-light px-4 py-2" style="background: #3b5998;">
+                            <a href="{% url 'social:begin' 'facebook' %}" class="text-decoration-none text-white">
+                                <i class="fab fa-facebook"></i> FACEBOOK
+                            </a>
+                        </li> -->
+                        <li class="list-inline-item border border-light px-4 py-2" style="background: #dd4b39;">
+                            <a href="{% url 'social:begin' 'google-oauth2' %}" class="text-decoration-none text-white">
+                                <i class="fab fa-google"></i> GOOGLE
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="small pb-2">---or using---</p>
+
+                    <form class="form-signin" method="POST" enctype="multipart/form-data">
+                        <div class="">
+                            {% for message in messages %}
+                                {% if message.tags|stringformat:"s" == 'error' %}
+                                <div class="mb-3 alert alert-danger text-justify mb-0 rounded-0 alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                {% elif message.tags|stringformat:"s" == 'success' %}
+                                <div class="mb-3 alert alert-success text-justify mb-0 rounded-0 alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                {% elif message.tags|stringformat:"s" == 'warning' %}
+                                <div class="mb-3 alert alert-warning text-justify mb-0 rounded-0 alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% csrf_token %}
+                        <div class="form-label-group text-left">
+                            <input type="text" id="inputEmail" name="userInput" class="form-control" placeholder="Enter Email ID/Phone No." required autofocus>
+                            <label for="inputEmail">Email ID/Phone No.</label>
+                        </div>
+                        <div class="form-label-group text-left">
+                            <input type="password" name="userPassInput" id="inputPassword" class="form-control" placeholder="Password" required>
+                            <label for="inputPassword">Password</label>
+                        </div>
+                        <div class="custom-control custom-checkbox text-left">
+                            <input type="checkbox" class="custom-control-input" id="showPass" onclick="showPassFun()">
+                            <label class="custom-control-label" for="showPass">Show Password</label>
+                        </div>
+                        <button class="btn btn-info rounded-left-0 rounded-right btn-block small" name="oneLoginSignupForm" type="submit">Login/Signup</button>
+                    </form>
+                    <div class="card-footer">
+                        <p class="my-2">
+                            <a href="{% url 'webApp:passwordReset' %}" class="text-info text-decoration-none">Forgot Password </a> |
+                            <a class="text-info text-decoration-none" href="{% url 'webApp:signup' %}">Sign-up</a>
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="signUpTruePopup" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="signUpTruePopupLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="signUpTruePopupLabel">Create New Account</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="font-weight-bold text-center">No Account Present with the provided information</p>
+                    <p>Create Account with the following details</p>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="userInput">Login ID</label>
+                            <input type="text" class="form-control" id="userInput" name="userInput" value="{{signUpInput}}">
+                        </div>
+                        <div class="form-group">
+                            <label for="inputPasswordPop">Password</label>
+                            <input type="password" class="form-control" id="inputPasswordPop" name="userPassInput" value="{{signUpPass}}">
+                        </div>
+                        <div class="custom-control custom-checkbox text-left">
+                            <input type="checkbox" class="custom-control-input" id="showPassPop" onclick="showPassFunPop()">
+                            <label class="custom-control-label" for="showPassPop">Show Password</label>
+                        </div>
+                        <button class="btn btn-success btn-block mb-1" type="submit" name="signUpUsingPopup" autofocus>Agree & Continue</button>
+                    </form>
+                    <p class="text-muted small">By Clicking Agree & Continue, You agree to our <a href="javascript:void(0);">Terms & Conditions.</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://kit.fontawesome.com/4cf7ac8e20.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+        .loginBG {
+            background-color: #48d2ff !important;
+            height: 100vh;
+        }
+    </style>
+
+    <script type="text/javascript">
+        function showPassFun() {
+            var showPass = document.getElementById("inputPassword");
+            if (showPass.type === "password") {
+                showPass.type = "text";
+            } else {
+                showPass.type = "password";
+            }
+        }
+
+        function showPassFunPop() {
+            var showPass = document.getElementById("inputPasswordPop");
+            if (showPass.type === "password") {
+                showPass.type = "text";
+            } else {
+                showPass.type = "password";
+            }
+        }
+    </script>
+</body>
+
+</html>
